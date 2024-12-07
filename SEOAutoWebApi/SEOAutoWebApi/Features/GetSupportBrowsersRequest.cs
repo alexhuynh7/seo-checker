@@ -8,11 +8,6 @@ namespace SEOAutoWebApi.Features
 {
     public class GetSupportBrowsersRequest
     {
-        public class GetSupportBrowsersResponse : IRequest<BaseResponseModel>
-        {
-            public List<SupportBrowserModel> SupportBrowsers { get; set; }
-        }
-
         public sealed class Handler
         {
             private readonly ICacheService _cacheService;

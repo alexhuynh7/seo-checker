@@ -4,7 +4,7 @@ namespace SEOAutoWebApi.Models
 {
     public class BaseResponseModel
     {
-        public EnumStatusCodeReturn Code { get; set; }
+        public StatusCodeReturnType Code { get; set; }
 
         public string? Title { get; set; }
 
@@ -24,7 +24,7 @@ namespace SEOAutoWebApi.Models
         {
             var res = new BaseResponseModel
             {
-                Code = EnumStatusCodeReturn.Success,
+                Code = StatusCodeReturnType.Success,
                 Title = title,
                 Message = message,
                 Data = data ?? true
@@ -36,7 +36,7 @@ namespace SEOAutoWebApi.Models
         {
             var res = new BaseResponseModel
             {
-                Code = EnumStatusCodeReturn.Error,
+                Code = StatusCodeReturnType.Error,
                 Title = title,
                 Message = message,
                 ErrorMessage = errorMessage,

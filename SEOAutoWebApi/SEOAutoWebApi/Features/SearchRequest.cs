@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SEOAutoWebApi.Cache;
 using SEOAutoWebApi.Infrastructure.Enums;
 using SEOAutoWebApi.Infrastructure.Extensions;
@@ -20,6 +21,7 @@ namespace SEOAutoWebApi.Features
         {
             private readonly ICacheService _cacheService;
             private readonly ISearchServiceFactory _searchServiceFactory;
+            private readonly IValidator<SearchRequest.Command> _validator;
 
             public Handler(ICacheService cacheService, ISearchServiceFactory searchServiceFactory)
             {
@@ -29,11 +31,12 @@ namespace SEOAutoWebApi.Features
 
             public async Task<BaseResponseModel> Handle(SearchRequest.Command request, CancellationToken cancellationToken)
             {
-                var invalidRequest = RequestValidation(request);
-                if (invalidRequest != null)
+                var valicationResult = _validator.Validate(request);
+                if (!valicationResult.IsValid)
                 {
-                    return invalidRequest;
+                    throw new Exception(valicationResult.ToString());
                 }
+                
                 var keyCache = string.Format(KeyCacheConstants.SearchKey, request.Keyword, request.Url, request.BrowserType);
                 var res = _cacheService.GetCache<List<RankingResultModel>>(keyCache);
 
@@ -76,19 +79,12 @@ namespace SEOAutoWebApi.Features
                 return BaseResponseModel.ReturnData(rankingResults);
             }
 
-            private static BaseResponseModel? RequestValidation(SearchRequest.Command request)
+            public class Validator : AbstractValidator<SearchRequest.Command>
             {
-                if (string.IsNullOrEmpty(request.Keyword))
+                public Validator()
                 {
-                    return BaseResponseModel.ReturnError("Keyword must not be empty.");
-                }
-                else if (string.IsNullOrEmpty(request.Url))
-                {
-                    return BaseResponseModel.ReturnError("Url must not be empty.");
-                }
-                else
-                {
-                    return null;
+                    RuleFor(c => c.Keyword).NotEmpty();
+                    RuleFor(c => c.Url).NotEmpty();
                 }
             }
         }

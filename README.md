@@ -14,4 +14,7 @@ This project implements an application to assist the CEO of Sympli in automatica
 3. **Multiple Search Engines Support** (Extension 2):
    - Supports multiple search engines (e.g., Google, Bing) with a flexible architecture for future extensions.
 
+
+Backend: ASP.NET Core 8, CQRS pattern, Factory Method pattern, Vertical Slide Architecture, DI (MediatR & FluentValidation), Caching, Unit Test
+
 ---

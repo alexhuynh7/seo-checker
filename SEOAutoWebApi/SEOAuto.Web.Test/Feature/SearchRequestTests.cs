@@ -44,7 +44,7 @@ namespace SEOAuto.Web.Test.Feature
 
             // Assert
             Assert.IsType<BaseResponseModel>(result);
-            Assert.Equal(EnumStatusCodeReturn.Success, result.Code);
+            Assert.Equal(StatusCodeReturnType.Success, result.Code);
             Assert.NotNull(result);
         }
 
