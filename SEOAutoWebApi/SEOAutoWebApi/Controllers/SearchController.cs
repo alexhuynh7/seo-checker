@@ -22,7 +22,7 @@ namespace SEOAutoWebApi.Controllers
         }
 
         [HttpGet("get-support-browsers")]
-        public async Task<IActionResult> GetSupportBrowsersAsync([FromQuery] GetSupportBrowsersRequest request)
+        public async Task<IActionResult> GetSupportBrowsersAsync([FromQuery] GetSupportBrowsersRequest.Command request)
         {
             var result = await _mediator.Send(request);
             return Ok(result);

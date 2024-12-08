@@ -1,6 +1,6 @@
 @SEOAutoWebApi_HostAddress = http://localhost:5090
 
-GET {{SEOAutoWebApi_HostAddress}}/weatherforecast/
+GET {{SEOAutoWebApi_HostAddress}}/Search/get-support-browsers
 Accept: application/json
 
 ###

@@ -2,7 +2,7 @@
 
 namespace SEOAutoWebApi.Models
 {
-    public class BaseResponseModel
+    public class ResponseModel
     {
         public StatusCodeReturnType Code { get; set; }
 
@@ -20,9 +20,9 @@ namespace SEOAutoWebApi.Models
 
         public dynamic? Data { get; set; }
 
-        public static BaseResponseModel ReturnData(dynamic? data = null, string message = "", string title = "")
+        public static ResponseModel ReturnData(dynamic? data = null, string message = "", string title = "")
         {
-            var res = new BaseResponseModel
+            var res = new ResponseModel
             {
                 Code = StatusCodeReturnType.Success,
                 Title = title,
@@ -32,9 +32,9 @@ namespace SEOAutoWebApi.Models
             return res;
         }
 
-        public static BaseResponseModel ReturnError(string message = "", string errorMessage = "", string title = "")
+        public static ResponseModel ReturnError(string message = "", string errorMessage = "", string title = "")
         {
-            var res = new BaseResponseModel
+            var res = new ResponseModel
             {
                 Code = StatusCodeReturnType.Error,
                 Title = title,

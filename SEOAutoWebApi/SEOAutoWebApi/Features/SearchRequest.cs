@@ -10,31 +10,41 @@ namespace SEOAutoWebApi.Features
 {
     public static class SearchRequest
     {
-        public class Command : IRequest<BaseResponseModel>
+        public class Command : IRequest<ResponseModel>
         {
             public string Keyword { get; set; }
             public string Url { get; set; }
             public BrowserType BrowserType { get; set; }
         }
 
-        public sealed class Handler : IRequestHandler<SearchRequest.Command, BaseResponseModel>
+        public sealed class Handler : IRequestHandler<SearchRequest.Command, ResponseModel>
         {
             private readonly ICacheService _cacheService;
             private readonly ISearchServiceFactory _searchServiceFactory;
             private readonly IValidator<SearchRequest.Command> _validator;
 
-            public Handler(ICacheService cacheService, ISearchServiceFactory searchServiceFactory)
+            public Handler(ICacheService cacheService, ISearchServiceFactory searchServiceFactory, IValidator<SearchRequest.Command> validator)
             {
                 _cacheService = cacheService;
                 _searchServiceFactory = searchServiceFactory;
+                _validator = validator;
             }
 
-            public async Task<BaseResponseModel> Handle(SearchRequest.Command request, CancellationToken cancellationToken)
+            public class Validator : AbstractValidator<SearchRequest.Command>
             {
-                var valicationResult = _validator.Validate(request);
-                if (!valicationResult.IsValid)
+                public Validator()
                 {
-                    throw new Exception(valicationResult.ToString());
+                    RuleFor(c => c.Keyword).NotEmpty();
+                    RuleFor(c => c.Url).NotEmpty();
+                }
+            }
+
+            public async Task<ResponseModel> Handle(SearchRequest.Command request, CancellationToken cancellationToken)
+            {
+                var validationResult = _validator.Validate(request);
+                if (!validationResult.IsValid)
+                {
+                    return ResponseModel.ReturnError(validationResult.ToString());
                 }
                 
                 var keyCache = string.Format(KeyCacheConstants.SearchKey, request.Keyword, request.Url, request.BrowserType);
@@ -42,7 +52,7 @@ namespace SEOAutoWebApi.Features
 
                 if (res != null)
                 {
-                    return BaseResponseModel.ReturnData(res);
+                    return ResponseModel.ReturnData(res);
                 }
 
                 var rankingResults = new List<RankingResultModel>();
@@ -76,16 +86,7 @@ namespace SEOAutoWebApi.Features
                     });
                 }
                 _cacheService.SetCache(keyCache, rankingResults);
-                return BaseResponseModel.ReturnData(rankingResults);
-            }
-
-            public class Validator : AbstractValidator<SearchRequest.Command>
-            {
-                public Validator()
-                {
-                    RuleFor(c => c.Keyword).NotEmpty();
-                    RuleFor(c => c.Url).NotEmpty();
-                }
+                return ResponseModel.ReturnData(rankingResults);
             }
         }
     }

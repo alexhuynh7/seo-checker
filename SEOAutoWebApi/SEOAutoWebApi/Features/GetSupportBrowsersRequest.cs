@@ -1,14 +1,20 @@
 ﻿using MediatR;
 using SEOAutoWebApi.Cache;
 using SEOAutoWebApi.Infrastructure.Domain;
+using SEOAutoWebApi.Infrastructure.Enums;
 using SEOAutoWebApi.Infrastructure.Extensions;
 using SEOAutoWebApi.Models;
 
 namespace SEOAutoWebApi.Features
 {
-    public class GetSupportBrowsersRequest
+    public static class GetSupportBrowsersRequest
     {
-        public sealed class Handler
+        public class Command : IRequest<ResponseModel>
+        {
+            
+        }
+
+        public sealed class Handler : IRequestHandler<GetSupportBrowsersRequest.Command, ResponseModel>
         {
             private readonly ICacheService _cacheService;
 
@@ -17,18 +23,18 @@ namespace SEOAutoWebApi.Features
                 _cacheService = cacheService;
             }
 
-            public async Task<BaseResponseModel> Handle()
+            public async Task<ResponseModel> Handle(GetSupportBrowsersRequest.Command request, CancellationToken cancellationToken)
             {
                 var keyCache = string.Format(KeyCacheConstants.SupportBrowsers);
                 var res = _cacheService.GetCache<IEnumerable<SupportBrowserModel>>(keyCache);
 
                 if (res != null && res.Count() > 0)
                 {
-                    return BaseResponseModel.ReturnData(res);
+                    return ResponseModel.ReturnData(res);
                 }
                 var supportBrowsers = SearchConstants.SUPPORT_BROWSERS.Select(browser => new SupportBrowserModel { BrowserType = browser, BrowserName = browser.ToName() });
                 _cacheService.SetCache(keyCache, supportBrowsers);
-                return BaseResponseModel.ReturnData(supportBrowsers);
+                return ResponseModel.ReturnData(supportBrowsers);
             }
         }
     }

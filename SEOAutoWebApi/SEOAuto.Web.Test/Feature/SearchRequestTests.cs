@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -28,6 +29,7 @@ namespace SEOAuto.Web.Test.Feature
 
             var mockCacheService = new Mock<ICacheService>();
             var mockSearchService = new Mock<ISearchServiceFactory>();
+            var mockValidator = new Mock<IValidator<SearchRequest.Command>>();
 
             var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             mockHttpMessageHandler.Protected()
@@ -39,11 +41,11 @@ namespace SEOAuto.Web.Test.Feature
             mockSearchService.Setup(m => m.GetSearchService(BrowserType.Google)).Returns(googleSearchService);
 
             // Act
-            var handler = new SearchRequest.Handler(mockCacheService.Object, mockSearchService.Object);
+            var handler = new SearchRequest.Handler(mockCacheService.Object, mockSearchService.Object, mockValidator.Object);
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
-            Assert.IsType<BaseResponseModel>(result);
+            Assert.IsType<ResponseModel>(result);
             Assert.Equal(StatusCodeReturnType.Success, result.Code);
             Assert.NotNull(result);
         }
@@ -53,7 +55,7 @@ namespace SEOAuto.Web.Test.Feature
         {
             // Arrange
             var request = new GetSupportBrowsersRequest();
-            var expectedResponse = new BaseResponseModel
+            var expectedResponse = new ResponseModel
             {
                 Data = new List<SupportBrowserModel>
                 {
@@ -71,7 +73,7 @@ namespace SEOAuto.Web.Test.Feature
             var result = await handler.Handle();
 
             // Assert
-            var returnValue = Assert.IsType<BaseResponseModel>(result);
+            var returnValue = Assert.IsType<ResponseModel>(result);
             List<SupportBrowserModel> resultList = Enumerable.ToList<SupportBrowserModel>(returnValue.Data);
             Assert.Equal(expectedResponse.Data.Count, resultList.Count);
         }
