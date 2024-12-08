@@ -12,8 +12,8 @@ function SeoAuto() {
     const [results, setResults] = useState<ISeoAutoSearchEngineResponse[]>([]);
 
     const handleSubmit = async (values: {
-        targetUrl: string;
         keyword: string;
+        targetUrl: string;
         searchEngines: number[];
     }) => {
         setLoading(true);
